@@ -927,7 +927,7 @@ def load_camera(colmap_data, context):
 
     # Load image file
     sort_image_id = np.argsort(image_names)
-    image_folder_path = bpy.path.abspath(bpy.context.scene.my_tool.colmap_path + 'images/')
+    image_folder_path = bpy.path.abspath(bpy.context.scene.my_tool.images_path)
 
     ## make a copy of images to comply with the continuous numbering requirement of sequence
     blender_img_path = bpy.context.scene.my_tool.colmap_path + 'blender_images/'
@@ -994,7 +994,14 @@ class MyProperties(PropertyGroup):
     slider bar, path, and everything else ....
     '''
     colmap_path: StringProperty(
-        name="Directory",
+        name="COLMAP",
+        description="Choose a directory:",
+        default="",
+        maxlen=1024,
+        subtype='DIR_PATH'
+    )
+    images_path: StringProperty(
+        name="Images",
         description="Choose a directory:",
         default="",
         maxlen=1024,
@@ -1069,7 +1076,7 @@ class LoadCOLMAP(Operator):
             bpy.data.curves.remove(curve, do_unlink=True)
 
         # load data
-        cameras, images, points3D = read_model(bpy.path.abspath(mytool.colmap_path + 'sparse/'), ext='.bin')
+        cameras, images, points3D = read_model(bpy.path.abspath(mytool.colmap_path), ext='.bin')
         display_pointcloud(points3D)
 
         global colmap_data, point_cloud_vertices
@@ -1453,6 +1460,7 @@ class LoadingPanel(NeuralangeloCustomPanel, bpy.types.Panel):
         mytool = scene.my_tool
 
         layout.prop(mytool, "colmap_path")
+        layout.prop(mytool, "images_path")
         layout.operator("addon.load_colmap")
         layout.separator()
 
